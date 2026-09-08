@@ -1,829 +1,989 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Centro Médico San Lucas - Reserva de Turno</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      border-radius: 0 !important; /* Cero redondeo estricto */
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PES 2010 - Creación de Jugador - PS2</title>
+    <style>
+        :root {
+            --pes-blue-dark: #071328;
+            --pes-blue-mid: #0f274c;
+            --pes-cyan: #00f0ff;
+            --pes-cyan-glow: rgba(0, 240, 255, 0.4);
+            --pes-yellow: #ffde00;
+            --pes-silver: #c4d1e0;
+            --pes-card-bg: rgba(10, 25, 50, 0.85);
+            --ps2-navy: #000c24;
+            --ps2-blue: #003791;
+            --btn-red: #e70012;
+            --btn-green: #00c853;
+            --btn-pink: #e91e63;
+            --btn-blue: #2196f3;
+        }
 
-    body {
-      background-color: #2b2b2b;
-      font-family: "Courier New", Courier, monospace;
-      color: #000000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 16px;
-    }
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            margin: 0;
+            padding: 0;
+            font-family: 'Trebuchet MS', Arial, sans-serif;
+        }
 
-    /* Contenedor principal estilo ventana/tarjeta de verificación clásica */
-    .app-container {
-      width: 100%;
-      max-width: 440px;
-      background-color: #d4d0c8;
-      border: 3px solid #000000;
-      box-shadow: 6px 6px 0px #000000;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
+        body {
+            background-color: var(--ps2-navy);
+            background-image: radial-gradient(circle at 50% 20%, #15325b 0%, #050d1a 80%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            overflow-x: hidden;
+        }
 
-    /* HEADER */
-    header {
-      border: 2px solid #808080;
-      background-color: #e4e0d8;
-      padding: 10px;
-      border-top-color: #ffffff;
-      border-left-color: #ffffff;
-    }
+        .app-container {
+            width: 100%;
+            max-width: 960px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 0 auto;
+        }
 
-    .header-title {
-      font-size: 14px;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px dashed #808080;
-      padding-bottom: 4px;
-    }
+        header {
+            background: linear-gradient(90deg, #000000 0%, var(--pes-blue-mid) 30%, var(--ps2-blue) 70%, #000000 100%);
+            border-top: 3px solid var(--pes-cyan);
+            border-bottom: 2px solid var(--pes-silver);
+            padding: 8px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 6px;
+        }
 
-    .header-subtitle {
-      font-size: 11px;
-      color: #444444;
-    }
+        .header-title-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-    .target-wrapper {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin-top: 4px;
-    }
+        .konami-logo {
+            background: #e70012;
+            color: white;
+            font-weight: 900;
+            font-style: italic;
+            padding: 2px 6px;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            border-radius: 2px;
+        }
 
-    .target-instruction {
-      font-size: 11px;
-      color: #333333;
-      line-height: 1.2;
-    }
+        header h1 {
+            font-size: 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #ffffff;
+            font-weight: 800;
+        }
 
-    /* Estilo del CAPTCHA gráfico retro con fondo distorsionado */
-    .captcha-badge {
-      background-color: #fff8dc;
-      border: 2px solid #000000;
-      padding: 4px 12px;
-      font-size: 22px;
-      font-weight: 900;
-      letter-spacing: 6px;
-      color: #1a1a1a;
-      text-decoration: line-through;
-      user-select: none;
-      font-style: italic;
-      background-image: repeating-linear-gradient(
-        45deg,
-        rgba(0, 0, 0, 0.05),
-        rgba(0, 0, 0, 0.05) 2px,
-        transparent 2px,
-        transparent 6px
-      );
-    }
+        .ps2-badge {
+            background: #001030;
+            border: 1px solid var(--pes-cyan);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
 
-    /* MAIN: CONTENIDO DINÁMICO SEGÚN PASO */
-    main {
-      border: 2px solid #000000;
-      background-color: #ffffff;
-      padding: 12px;
-    }
+        .ps2-badge::before {
+            content: "PS2";
+            background: #ffffff;
+            color: #000c24;
+            font-size: 0.6rem;
+            padding: 1px 3px;
+            border-radius: 2px;
+            font-weight: 900;
+        }
 
-    .step-section {
-      display: none;
-      flex-direction: column;
-      gap: 10px;
-    }
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 14px;
+        }
 
-    .step-section.active {
-      display: flex;
-    }
+        @media (max-width: 768px) {
+            .main-content { grid-template-columns: 1fr; }
+        }
 
-    /* Formularios y campos */
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
+        .pes-card {
+            background: var(--pes-card-bg);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            border-radius: 8px;
+            padding: 14px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.6);
+        }
 
-    .form-label {
-      font-size: 11px;
-      font-weight: bold;
-      color: #333333;
-      text-transform: uppercase;
-    }
+        .pes-card-title {
+            font-size: 0.85rem;
+            color: var(--pes-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+            padding-bottom: 6px;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+        }
 
-    .form-input {
-      font-family: "Courier New", Courier, monospace;
-      font-size: 13px;
-      padding: 6px 8px;
-      border: 2px inset #808080;
-      background-color: #f7f7f7;
-      color: #000000;
-      width: 100%;
-    }
+        .form-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
 
-    .form-input:focus {
-      outline: none;
-      background-color: #ffffff;
-      border-color: #000080;
-    }
+        .pes-form-row {
+            display: grid;
+            grid-template-columns: 110px 1fr;
+            align-items: center;
+            background: linear-gradient(90deg, rgba(15, 39, 76, 0.8) 0%, rgba(5, 15, 30, 0.8) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            padding: 6px 10px;
+            transition: all 0.2s ease;
+            position: relative;
+        }
 
-    /* Tablero de Galton */
-    .board-container {
-      position: relative;
-      width: 100%;
-      height: 310px;
-      background-color: #f0f0f0;
-      border: 2px inset #808080;
-      overflow: hidden;
-    }
+        .pes-form-row.active {
+            border: 2px solid var(--pes-cyan);
+            background: linear-gradient(90deg, rgba(27, 75, 138, 0.9) 0%, rgba(10, 35, 75, 0.9) 100%);
+            box-shadow: 0 0 10px var(--pes-cyan-glow);
+        }
 
-    /* Pegs (clavijas) */
-    .peg {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      background-color: #707070;
-      border: 1px solid #303030;
-      border-radius: 50% !important;
-      transform: translate(-50%, -50%);
-      z-index: 2;
-      transition: transform 0.1s ease, background-color 0.1s ease;
-    }
+        .pes-form-row.active::before {
+            content: "►";
+            position: absolute;
+            left: -12px;
+            color: var(--pes-yellow);
+            font-size: 0.75rem;
+        }
 
-    .peg.hit {
-      background-color: #ff3b00;
-      transform: translate(-50%, -50%) scale(1.6);
-      box-shadow: 0 0 6px #ff3b00;
-    }
+        .pes-label {
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: var(--pes-silver);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
-    /* La bola */
-    .ball {
-      position: absolute;
-      width: 16px;
-      height: 16px;
-      background-color: #ff6600;
-      border: 2px solid #993300;
-      border-radius: 50% !important;
-      transform: translate(-50%, -50%);
-      z-index: 10;
-      display: none;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.35);
-      transition: top 220ms cubic-bezier(0.3, 0.7, 0.4, 1), left 220ms ease-in-out;
-    }
+        .pes-form-row.active .pes-label {
+            color: #ffffff;
+        }
 
-    /* Canaletas receptoras */
-    .bins-container {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 85px;
-      display: flex;
-      border-top: 2px solid #000000;
-      z-index: 3;
-      background-color: #e4e0d8;
-    }
+        /* Minimalist Character Slots */
+        .char-slots-container {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            overflow-x: auto;
+            padding: 2px 0;
+            pointer-events: none;
+        }
 
-    .canaleta {
-      flex: 1;
-      border-right: 2px solid #000000;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 2px;
-      background-color: #dcd7ce;
-      transition: background-color 0.15s ease;
-      cursor: pointer;
-      user-select: none;
-    }
+        .char-slot {
+            width: 22px;
+            height: 28px;
+            background: #ffffff;
+            color: #000000;
+            border: 1px solid #999999;
+            border-radius: 2px;
+            font-family: 'Courier New', monospace;
+            font-weight: 900;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+        }
 
-    .canaleta:hover {
-      background-color: #ece8df;
-    }
+        .pes-form-row.active .char-slot {
+            border-color: var(--pes-yellow);
+            box-shadow: 0 0 4px var(--pes-yellow);
+        }
 
-    .canaleta:last-child {
-      border-right: none;
-    }
+        .slot-unit {
+            color: #ffffff;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-left: 6px;
+            text-transform: lowercase;
+        }
 
-    .canaleta.selected {
-      background-color: #000080;
-    }
+        .actions-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
 
-    .canaleta.selected .canaleta-letter {
-      color: #ffffff;
-    }
+        .pes-btn {
+            flex: 1;
+            padding: 10px;
+            background: linear-gradient(180deg, #1e3c72 0%, #2a5298 100%);
+            border: 1px solid var(--pes-silver);
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.85rem;
+            text-align: center;
+            pointer-events: none;
+            transition: all 0.2s;
+        }
 
-    .canaleta.selected .canaleta-prob {
-      color: #e0e0e0;
-      border-top-color: #ffffff;
-    }
+        .pes-btn.active {
+            border: 2px solid var(--pes-yellow);
+            background: linear-gradient(180deg, #ff9900 0%, #cc6600 100%);
+            box-shadow: 0 0 12px rgba(255, 153, 0, 0.6);
+            color: #ffffff;
+        }
 
-    .canaleta.highlight {
-      background-color: #ffcc99;
-    }
+        .pes-btn.cancel-btn.active {
+            background: linear-gradient(180deg, #d32f2f 0%, #8e0000 100%);
+            box-shadow: 0 0 12px rgba(211, 47, 47, 0.6);
+            border-color: #ff8888;
+        }
 
-    .canaleta-letter {
-      font-size: 16px;
-      font-weight: 900;
-      color: #000000;
-    }
+        /* Player Summary Side Panel */
+        .player-preview-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, rgba(10,30,60,0.8) 0%, rgba(0,10,25,0.9) 100%);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            border-radius: 8px;
+            padding: 14px;
+            text-align: center;
+        }
 
-    .canaleta-prob {
-      font-size: 9px;
-      font-weight: bold;
-      color: #444444;
-      border-top: 1px solid #999999;
-      width: 100%;
-      text-align: center;
-      padding-top: 2px;
-    }
+        .player-avatar-svg {
+            width: 120px;
+            height: 150px;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 0 6px var(--pes-cyan-glow));
+        }
 
-    /* Sección de Turno Confirmado */
-    .confirmed-box {
-      background-color: #e8f5e9;
-      border: 2px solid #2e7d32;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+        .player-summary-name {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--pes-yellow);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            min-height: 24px;
+        }
 
-    .confirmed-title {
-      font-size: 13px;
-      font-weight: bold;
-      color: #1b5e20;
-      text-align: center;
-      border-bottom: 1px dashed #a5d6a7;
-      padding-bottom: 6px;
-    }
+        .player-summary-details {
+            font-size: 0.8rem;
+            color: var(--pes-silver);
+            display: flex;
+            gap: 10px;
+        }
 
-    .confirmed-details {
-      font-size: 12px;
-      color: #263238;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      line-height: 1.4;
-    }
+        /* Controller Section */
+        .controller-section {
+            background: linear-gradient(180deg, #101520 0%, #050810 100%);
+            border: 2px solid #203045;
+            border-radius: 12px;
+            padding: 14px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.8);
+            margin-top: 6px;
+            position: relative;
+            z-index: 500;
+            pointer-events: auto;
+        }
 
-    /* FOOTER Y CONTROLES */
-    footer {
-      border-top: 2px solid #808080;
-      padding-top: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
+        .sony-brand {
+            font-size: 1.2rem;
+            font-weight: 900;
+            color: #ffffff;
+            text-align: center;
+            letter-spacing: 6px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            text-shadow: 0 0 6px rgba(255,255,255,0.4);
+        }
 
-    .footer-contact {
-      font-size: 10px;
-      color: #333333;
-      text-align: center;
-    }
+        .controller-layout {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            max-width: 550px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
 
-    /* Panel de letras ingresadas */
-    .inputs-display-box {
-      border: 2px inset #808080;
-      background-color: #ffffff;
-      padding: 8px 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+        /* D-PAD */
+        .dpad-container {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            background: #111;
+            border-radius: 50%;
+            padding: 6px;
+            box-shadow: inset 0 0 8px #000;
+        }
 
-    .inputs-label {
-      font-size: 11px;
-      font-weight: bold;
-      color: #333333;
-    }
+        .dpad-btn {
+            position: absolute;
+            background: linear-gradient(145deg, #333338, #1a1a1c);
+            border: 1px solid #444;
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
 
-    .slots-wrapper {
-      display: flex;
-      gap: 8px;
-    }
+        .dpad-btn:active, .dpad-btn.pressed {
+            background: var(--pes-cyan);
+            color: #000;
+            box-shadow: 0 0 8px var(--pes-cyan);
+        }
 
-    .slot {
-      width: 28px;
-      height: 32px;
-      border: 2px solid #000000;
-      background-color: #f7f7f7;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      font-weight: bold;
-      color: #000000;
-    }
+        .dpad-up { top: 6px; left: 41px; width: 38px; height: 38px; border-radius: 6px 6px 0 0; }
+        .dpad-down { bottom: 6px; left: 41px; width: 38px; height: 38px; border-radius: 0 0 6px 6px; }
+        .dpad-left { top: 41px; left: 6px; width: 38px; height: 38px; border-radius: 6px 0 0 6px; }
+        .dpad-right { top: 41px; right: 6px; width: 38px; height: 38px; border-radius: 0 6px 6px 0; }
+        .dpad-center { position: absolute; top: 41px; left: 41px; width: 38px; height: 38px; background: #222; pointer-events: none; }
 
-    .slot.filled {
-      background-color: #e0e0e0;
-    }
+        /* Action Buttons */
+        .shapes-container {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            background: #111;
+            border-radius: 50%;
+            padding: 6px;
+            box-shadow: inset 0 0 8px #000;
+        }
 
-    /* Botones retro */
-    .buttons-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
+        .ps-btn {
+            position: absolute;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #2a2a2e, #151517);
+            border: 2px solid #3d3d42;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
 
-    button {
-      font-family: "Courier New", Courier, monospace;
-      font-size: 13px;
-      font-weight: bold;
-      padding: 8px 10px;
-      background-color: #d4d0c8;
-      color: #000000;
-      border: 2px solid #ffffff;
-      border-right-color: #404040;
-      border-bottom-color: #404040;
-      cursor: pointer;
-      user-select: none;
-      text-align: center;
-    }
+        .ps-btn:active, .ps-btn.pressed {
+            transform: translateY(2px);
+        }
 
-    button:hover:not(:disabled) {
-      background-color: #e0dcd4;
-    }
+        .ps-triangle { top: 6px; left: 42px; color: var(--btn-green); border-color: rgba(0, 200, 83, 0.4); }
+        .ps-square { top: 42px; left: 6px; color: var(--btn-pink); border-color: rgba(233, 30, 99, 0.4); }
+        .ps-circle { top: 42px; right: 6px; color: var(--btn-red); border-color: rgba(231, 0, 18, 0.4); }
+        .ps-cross { bottom: 6px; left: 42px; color: var(--btn-blue); border-color: rgba(33, 150, 243, 0.4); }
 
-    button:active:not(:disabled) {
-      border: 2px solid #404040;
-      border-right-color: #ffffff;
-      border-bottom-color: #ffffff;
-      padding-top: 9px;
-      padding-left: 11px;
-      padding-bottom: 7px;
-      padding-right: 9px;
-    }
+        .pes-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 5, 15, 0.6);
+            backdrop-filter: blur(2px);
+            display: flex;
+            align-items: flex-start;
+            padding-top: 15px;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
 
-    button:disabled {
-      color: #888888;
-      background-color: #cccccc;
-      border-color: #e0e0e0;
-      border-right-color: #999999;
-      border-bottom-color: #999999;
-      cursor: not-allowed;
-    }
+        .pes-modal-overlay.open {
+            opacity: 1;
+            pointer-events: none;
+        }
 
-    .btn-full {
-      width: 100%;
-    }
+        .pes-modal {
+            background: linear-gradient(180deg, #0f274c 0%, #051326 100%);
+            border: 2px solid var(--pes-cyan);
+            border-radius: 8px;
+            padding: 16px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.4);
+            pointer-events: none;
+        }
 
-    .btn-primary {
-      background-color: #000080;
-      color: #ffffff;
-      border-color: #5555ff;
-      border-right-color: #000033;
-      border-bottom-color: #000033;
-    }
+        .modal-title {
+            color: var(--pes-cyan);
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            text-align: center;
+            border-bottom: 1px solid rgba(0,240,255,0.3);
+            padding-bottom: 4px;
+        }
 
-    .btn-primary:hover:not(:disabled) {
-      background-color: #0000aa;
-    }
+        .vk-input-box {
+            background: #000;
+            border: 1px solid var(--pes-silver);
+            padding: 8px;
+            font-family: monospace;
+            font-size: 1.2rem;
+            color: var(--pes-yellow);
+            text-align: center;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            min-height: 42px;
+        }
 
-    /* Mensajes de resultado */
-    .result-banner {
-      display: none;
-      padding: 8px;
-      text-align: center;
-      font-size: 11px;
-      font-weight: bold;
-      border: 2px solid #000000;
-      background-color: #ffcdd2;
-      color: #b71c1c;
-      margin-top: 4px;
-    }
-  </style>
+        .keyboard-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .key-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 8px 0;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            pointer-events: none;
+        }
+
+        .key-btn.active-key {
+            background: var(--pes-yellow);
+            color: #000;
+            border-color: #ffffff;
+            box-shadow: 0 0 8px rgba(255, 222, 0, 0.8);
+            transform: scale(1.05);
+        }
+
+        .key-btn.wide { grid-column: span 2; }
+
+        .adjuster-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 0;
+        }
+
+        .adjuster-arrow {
+            font-size: 1.5rem;
+            color: var(--pes-cyan);
+        }
+
+        .adjuster-value {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--pes-yellow);
+            font-family: monospace;
+        }
+
+        footer {
+            background: rgba(5, 12, 24, 0.95);
+            border-top: 1px solid rgba(0, 240, 255, 0.3);
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+
+        .legend-grid {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            font-size: 0.78rem;
+            color: var(--pes-silver);
+        }
+
+        .legend-item { display: flex; align-items: center; gap: 5px; }
+        .icon-tag {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 0.7rem;
+            color: #fff;
+            background: #222;
+            border: 1px solid #555;
+        }
+
+        .icon-cross { border-color: var(--btn-blue); color: var(--btn-blue); }
+        .icon-circle { border-color: var(--btn-red); color: var(--btn-red); }
+        .icon-triangle { border-color: var(--btn-green); color: var(--btn-green); }
+        .icon-square { border-color: var(--btn-pink); color: var(--btn-pink); }
+        .icon-dpad { border-radius: 4px; padding: 0 4px; width: auto; color: var(--pes-cyan); border-color: var(--pes-cyan); }
+
+        .toast-msg {
+            position: fixed;
+            bottom: 75px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: linear-gradient(180deg, #1e3c72 0%, #000c24 100%);
+            border: 2px solid var(--pes-yellow);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 2000;
+            text-align: center;
+        }
+
+        .toast-msg.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
 </head>
 <body>
 
-  <div class="app-container">
-    
-    <!-- HEADER: TÍTULO Y CAPTCHA OBJETIVO -->
-    <header>
-      <div class="header-title">
-        <span>CENTRO MÉDICO SAN LUCAS</span>
-        <span class="header-subtitle">Turnos Web</span>
-      </div>
+    <div class="app-container">
+        <header>
+            <div class="header-title-group">
+                <span class="konami-logo">KONAMI</span>
+                <h1>PES 2010 - Creación de Jugador</h1>
+            </div>
+            <div class="ps2-badge">
+                PlayStation 2
+            </div>
+        </header>
 
-      <!-- Header informativo para el paso de Formulario y Confirmado -->
-      <div id="form-header-info" style="font-size: 11px; color: #333333;">
-        Complete el formulario para solicitar su cita médica.
-      </div>
+        <div class="main-content">
+            <!-- Left Panel: Navigable Form -->
+            <div class="pes-card">
+                <div class="pes-card-title">
+                    <span>Ajustes Básicos del Jugador</span>
+                    <span style="color: var(--pes-yellow);">Edición PS2</span>
+                </div>
 
-      <!-- Header específico para el paso de Captcha -->
-      <div id="captcha-header-info" style="display: none;" class="target-wrapper">
-        <div class="target-instruction">
-          Verificación obligatoria:<br>Ingrese el código:
+                <div class="form-rows">
+                    <!-- Form Row 1: Name -->
+                    <div class="pes-form-row active" id="row-0">
+                        <span class="pes-label">Nombre:</span>
+                        <div class="char-slots-container" id="slots-name"></div>
+                    </div>
+
+                    <!-- Form Row 2: Age -->
+                    <div class="pes-form-row" id="row-1">
+                        <span class="pes-label">Edad:</span>
+                        <div class="char-slots-container">
+                            <div class="char-slots-container" id="slots-age"></div>
+                            <span class="slot-unit">años</span>
+                        </div>
+                    </div>
+
+                    <!-- Form Row 3: Height -->
+                    <div class="pes-form-row" id="row-2">
+                        <span class="pes-label">Altura:</span>
+                        <div class="char-slots-container">
+                            <div class="char-slots-container" id="slots-height"></div>
+                            <span class="slot-unit">cm</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="actions-group">
+                    <div class="pes-btn" id="row-3">Crear Jugador</div>
+                    <div class="pes-btn cancel-btn" id="row-4">Cancelar</div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Player Summary Card -->
+            <div class="player-preview-card">
+                <svg class="player-avatar-svg" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="30" r="20" fill="#00f0ff" opacity="0.8"/>
+                    <path d="M 20 100 C 20 65, 80 65, 80 100 Z" fill="#00f0ff" opacity="0.8"/>
+                    <path d="M 35 35 L 65 35 L 50 50 Z" fill="#ffde00" opacity="0.6"/>
+                </svg>
+                <div class="player-summary-name" id="preview-card-name">JUGADOR 1</div>
+                <div class="player-summary-details">
+                    <span id="preview-card-age">Edad: 22</span>
+                    <span>|</span>
+                    <span id="preview-card-height">178 cm</span>
+                </div>
+            </div>
         </div>
-        <div id="captcha-target" class="captcha-badge" title="Objetivo a replicar">
-          ---
+
+        <div class="controller-section">
+            <div class="sony-brand">SONY</div>
+            <div class="controller-layout">
+                
+                <!-- D-PAD -->
+                <div class="dpad-container">
+                    <div class="dpad-btn dpad-up" id="btn-up" onclick="handleInput('UP')">▲</div>
+                    <div class="dpad-btn dpad-down" id="btn-down" onclick="handleInput('DOWN')">▼</div>
+                    <div class="dpad-btn dpad-left" id="btn-left" onclick="handleInput('LEFT')">◄</div>
+                    <div class="dpad-btn dpad-right" id="btn-right" onclick="handleInput('RIGHT')">►</div>
+                    <div class="dpad-center"></div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="shapes-container">
+                    <div class="ps-btn ps-triangle" id="btn-triangle" onclick="handleInput('TRIANGLE')">▲</div>
+                    <div class="ps-btn ps-square" id="btn-square" onclick="handleInput('SQUARE')">■</div>
+                    <div class="ps-btn ps-circle" id="btn-circle" onclick="handleInput('CIRCLE')">●</div>
+                    <div class="ps-btn ps-cross" id="btn-cross" onclick="handleInput('CROSS')">✖</div>
+                </div>
+
+            </div>
         </div>
-      </div>
-    </header>
 
-    <!-- MAIN: CONTENEDOR SEGÚN PASO -->
-    <main>
-      <!-- PASO 1: FORMULARIO -->
-      <section id="step-formulario" class="step-section active">
-        <form id="booking-form" style="display: flex; flex-direction: column; gap: 10px;">
-          <div class="form-group">
-            <label class="form-label" for="input-nombre">Nombre y Apellido:</label>
-            <input type="text" id="input-nombre" class="form-input" required placeholder="Ej. Juan Pérez">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="input-email">Correo Electrónico:</label>
-            <input type="email" id="input-email" class="form-input" required placeholder="ejemplo@correo.com">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="input-fecha">Fecha del Turno:</label>
-            <input type="date" id="input-fecha" class="form-input" required>
-          </div>
-          <button type="submit" class="btn-full btn-primary" style="margin-top: 6px;">Reservar turno</button>
-        </form>
-      </section>
+        <footer>
+            <div class="legend-grid">
+                <div class="legend-item"><span class="icon-tag icon-dpad">◄▲▼►</span> Moverse</div>
+                <div class="legend-item"><span class="icon-tag icon-cross">✖</span> Seleccionar / Confirmar</div>
+                <div class="legend-item"><span class="icon-tag icon-circle">●</span> Volver / Ir a Cancelar</div>
+                <div class="legend-item"><span class="icon-tag icon-triangle">▲</span> Cancelar / Cerrar</div>
+                <div class="legend-item"><span class="icon-tag icon-square">■</span> Borrar Letra</div>
+            </div>
+        </footer>
+    </div>
 
-      <!-- PASO 2: CAPTCHA (MÁQUINA DE GALTON) -->
-      <section id="step-captcha" class="step-section">
-        <div id="board" class="board-container">
-          <!-- Clavijas y canaletas generadas vía JS -->
-          <div id="ball" class="ball"></div>
-          <div id="bins" class="bins-container"></div>
+    <div class="pes-modal-overlay" id="vk-modal">
+        <div class="pes-modal">
+            <div class="modal-title">PES 2010 - Entrada de Nombre</div>
+            <div class="vk-input-box" id="vk-display">JUGADOR 1</div>
+            <div class="keyboard-grid" id="keyboard-grid"></div>
         </div>
-        <!-- Banner de Error en Captcha -->
-        <div id="result-box" class="result-banner">
-          ✗ FALLÓ VERIFICACIÓN: CÓDIGO INCORRECTO. REINTENTANDO...
+    </div>
+
+    <div class="pes-modal-overlay" id="adjust-modal">
+        <div class="pes-modal" style="max-width: 300px;">
+            <div class="modal-title" id="adjust-title">Ajustar Valor</div>
+            <div class="adjuster-box">
+                <div class="adjuster-arrow">▲ (+1)</div>
+                <div class="adjuster-value" id="adjust-value">22</div>
+                <div class="adjuster-arrow">▼ (-1)</div>
+            </div>
+            <p style="text-align: center; font-size: 0.75rem; color: var(--pes-silver); margin-top: 6px;">
+                [▲/▼] Cambiar &nbsp; [✖] Aceptar &nbsp; [▲/●] Cancelar
+            </p>
         </div>
-      </section>
+    </div>
 
-      <!-- PASO 3: CONFIRMADO -->
-      <section id="step-confirmado" class="step-section">
-        <div class="confirmed-box">
-          <div class="confirmed-title">✓ TURNO CONFIRMADO CON ÉXITO</div>
-          <div class="confirmed-details">
-            <div><strong>Paciente:</strong> <span id="conf-nombre">---</span></div>
-            <div><strong>Email:</strong> <span id="conf-email">---</span></div>
-            <div><strong>Fecha:</strong> <span id="conf-fecha">---</span></div>
-            <div><strong>Estado:</strong> Aprobado por verificación humana</div>
-          </div>
-        </div>
-        <button id="btn-nuevo-turno" class="btn-full btn-primary" style="margin-top: 8px;">Solicitar otro turno</button>
-      </section>
-    </main>
+    <div class="toast-msg" id="toast"></div>
 
-    <!-- FOOTER: CONTROLES DEL CAPTCHA Y LÍNEA DE CONTACTO -->
-    <footer>
-      <!-- Controles de Galton visibles únicamente en paso captcha -->
-      <div id="captcha-controls" style="display: none; flex-direction: column; gap: 8px;">
-        <div class="inputs-display-box">
-          <span class="inputs-label">INGRESADOS:</span>
-          <div class="slots-wrapper">
-            <div id="slot-0" class="slot">-</div>
-            <div id="slot-1" class="slot">-</div>
-            <div id="slot-2" class="slot">-</div>
-          </div>
-        </div>
-        <div class="buttons-row">
-          <button id="btn-drop" type="button">Soltar bola</button>
-          <button id="btn-delete" type="button">Borrar último</button>
-        </div>
-      </div>
-
-      <div class="footer-contact">
-        Consultas y urgencias: 0800-555-SANLUCAS | Sede Central
-      </div>
-    </footer>
-
-  </div>
-
-  <script>
-    const BASE_LETTERS = ['A', 'B', 'C', 'D', 'E'];
-    const PROBABILITIES = ['1/16', '4/16', '6/16', '4/16', '1/16'];
-    const STEP_DURATION_MS = 220;
-
-    // Estado general de pasos: "formulario" | "captcha" | "confirmado"
-    let paso = "formulario";
-    let datosUsuario = { nombre: '', email: '', fecha: '' };
-
-    // Estado interno del Captcha de Galton
-    let letras = ['A', 'B', 'C', 'D', 'E'];
-    let seleccionada = null;
-    let objetivo = [];
-    let ingresados = [];
-    let cayendo = false;
-
-    // Elementos del DOM
-    const stepFormEl = document.getElementById('step-formulario');
-    const stepCaptchaEl = document.getElementById('step-captcha');
-    const stepConfirmadoEl = document.getElementById('step-confirmado');
-    const bookingFormEl = document.getElementById('booking-form');
-
-    const headerInfoForm = document.getElementById('form-header-info');
-    const headerInfoCaptcha = document.getElementById('captcha-header-info');
-    const targetBadgeEl = document.getElementById('captcha-target');
-    const captchaControlsEl = document.getElementById('captcha-controls');
-
-    const boardEl = document.getElementById('board');
-    const ballEl = document.getElementById('ball');
-    const binsEl = document.getElementById('bins');
-    const resultBoxEl = document.getElementById('result-box');
-
-    const btnDropEl = document.getElementById('btn-drop');
-    const btnDeleteEl = document.getElementById('btn-delete');
-    const btnNuevoTurnoEl = document.getElementById('btn-nuevo-turno');
-
-    const slots = [
-      document.getElementById('slot-0'),
-      document.getElementById('slot-1'),
-      document.getElementById('slot-2')
-    ];
-
-    const confNombreEl = document.getElementById('conf-nombre');
-    const confEmailEl = document.getElementById('conf-email');
-    const confFechaEl = document.getElementById('conf-fecha');
-
-    const pegElements = [];
-
-    function cambiarPaso(nuevoPaso) {
-      paso = nuevoPaso;
-
-      stepFormEl.classList.remove('active');
-      stepCaptchaEl.classList.remove('active');
-      stepConfirmadoEl.classList.remove('active');
-
-      headerInfoForm.style.display = 'none';
-      headerInfoCaptcha.style.display = 'none';
-      captchaControlsEl.style.display = 'none';
-
-      if (paso === "formulario") {
-        stepFormEl.classList.add('active');
-        headerInfoForm.style.display = 'block';
-      } else if (paso === "captcha") {
-        stepCaptchaEl.classList.add('active');
-        headerInfoCaptcha.style.display = 'flex';
-        captchaControlsEl.style.display = 'flex';
-        initCaptchaRound();
-      } else if (paso === "confirmado") {
-        stepConfirmadoEl.classList.add('active');
-        headerInfoForm.style.display = 'block';
-        confNombreEl.textContent = datosUsuario.nombre;
-        confEmailEl.textContent = datosUsuario.email;
-        confFechaEl.textContent = datosUsuario.fecha;
-      }
-    }
-
-    function buildBoard() {
-      const boardWidth = boardEl.clientWidth || 372;
-      const startY = 32;
-      const rowGapY = 40;
-      const pegSpacingX = 48;
-      const centerX = boardWidth / 2;
-
-      for (let r = 0; r < 4; r++) {
-        pegElements[r] = [];
-        const numPegsInRow = r + 1;
-        const rowStartX = centerX - ((numPegsInRow - 1) * pegSpacingX) / 2;
-        const posY = startY + r * rowGapY;
-
-        for (let c = 0; c < numPegsInRow; c++) {
-          const posX = rowStartX + c * pegSpacingX;
-          const peg = document.createElement('div');
-          peg.className = 'peg';
-          peg.style.left = `${posX}px`;
-          peg.style.top = `${posY}px`;
-          boardEl.appendChild(peg);
-          pegElements[r].push({ el: peg, x: posX, y: posY });
-        }
-      }
-
-      binsEl.innerHTML = '';
-      for (let i = 0; i < 5; i++) {
-        const bin = document.createElement('div');
-        bin.className = 'canaleta';
-        bin.id = `bin-${i}`;
-        bin.innerHTML = `
-          <span class="canaleta-letter">${letras[i]}</span>
-          <span class="canaleta-prob">${PROBABILITIES[i]}</span>
-        `;
-        bin.addEventListener('click', () => onBinClick(i));
-        binsEl.appendChild(bin);
-      }
-    }
-
-    function onBinClick(index) {
-      if (cayendo) return;
-
-      if (seleccionada === null) {
-        seleccionada = index;
-      } else if (seleccionada === index) {
-        seleccionada = null;
-      } else {
-        const temp = letras[seleccionada];
-        letras[seleccionada] = letras[index];
-        letras[index] = temp;
-        seleccionada = null;
-      }
-
-      updateBinsUI();
-    }
-
-    function updateBinsUI() {
-      for (let i = 0; i < 5; i++) {
-        const binEl = document.getElementById(`bin-${i}`);
-        if (!binEl) continue;
-
-        const letterEl = binEl.querySelector('.canaleta-letter');
-        if (letterEl) {
-          letterEl.textContent = letras[i];
+    <script>
+        class PESAudio {
+            constructor() { this.ctx = null; }
+            init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
+            play(freq, type, dur) {
+                try {
+                    this.init();
+                    if (this.ctx.state === 'suspended') this.ctx.resume();
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = type || 'sine';
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                    gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + dur);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + dur);
+                } catch(e) {}
+            }
+            move() { this.play(600, 'square', 0.04); }
+            select() { this.play(800, 'triangle', 0.06); setTimeout(() => this.play(1200, 'sine', 0.1), 50); }
+            back() { this.play(350, 'sawtooth', 0.08); }
+            delete() { this.play(250, 'square', 0.06); }
+            error() { this.play(180, 'sawtooth', 0.12); }
         }
 
-        if (seleccionada === i) {
-          binEl.classList.add('selected');
-        } else {
-          binEl.classList.remove('selected');
+        const audio = new PESAudio();
+
+        const state = {
+            activeRowIndex: 0,
+            player: { name: "JUGADOR 1", age: 22, height: 178 },
+            modal: null,
+            keyboard: { row: 0, col: 0, tempName: "" },
+            adjuster: { tempValue: 0 }
+        };
+
+        const KEYBOARD_KEYS = [
+            ['A','B','C','D','E','F','G'],
+            ['H','I','J','K','L','M','N'],
+            ['O','P','Q','R','S','T','U'],
+            ['V','W','X','Y','Z','0','1'],
+            ['2','3','4','5','6','7','8'],
+            ['9','ESPACIO','BORRAR','OK']
+        ];
+
+        function initKeyboardDOM() {
+            const grid = document.getElementById('keyboard-grid');
+            grid.innerHTML = '';
+            KEYBOARD_KEYS.forEach((row, rIdx) => {
+                row.forEach((key, cIdx) => {
+                    const btn = document.createElement('div');
+                    btn.className = 'key-btn' + (['ESPACIO','BORRAR','OK'].includes(key) ? ' wide' : '');
+                    btn.id = `vk-key-${rIdx}-${cIdx}`;
+                    btn.innerText = key;
+                    grid.appendChild(btn);
+                });
+            });
         }
-      }
-    }
 
-    function getRandomLetter() {
-      return BASE_LETTERS[Math.floor(Math.random() * BASE_LETTERS.length)];
-    }
-
-    function initCaptchaRound() {
-      letras = ['A', 'B', 'C', 'D', 'E'];
-      seleccionada = null;
-      objetivo = [getRandomLetter(), getRandomLetter(), getRandomLetter()];
-      ingresados = [];
-      cayendo = false;
-
-      targetBadgeEl.textContent = objetivo.join(' ');
-      resultBoxEl.style.display = 'none';
-      ballEl.style.display = 'none';
-
-      updateBinsUI();
-      updateCaptchaUI();
-    }
-
-    function updateCaptchaUI() {
-      for (let i = 0; i < 3; i++) {
-        if (i < ingresados.length) {
-          slots[i].textContent = ingresados[i];
-          slots[i].classList.add('filled');
-        } else {
-          slots[i].textContent = '-';
-          slots[i].classList.remove('filled');
+        /* Render character slots with minimalist white box styling */
+        function renderSlots(containerId, value, totalSlots) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const strVal = String(value || '');
+            let html = '';
+            for (let i = 0; i < totalSlots; i++) {
+                const char = strVal[i] !== undefined ? strVal[i] : '';
+                html += `<div class="char-slot">${char === ' ' ? '&nbsp;' : char}</div>`;
+            }
+            container.innerHTML = html;
         }
-      }
 
-      const isCompleted = ingresados.length >= 3;
+        function updateUI() {
+            // Highlight current active row
+            for (let i = 0; i < 5; i++) {
+                const el = document.getElementById(`row-${i}`);
+                if (el) el.classList.toggle('active', i === state.activeRowIndex && !state.modal);
+            }
 
-      btnDropEl.disabled = cayendo || isCompleted;
-      btnDeleteEl.disabled = cayendo || ingresados.length === 0;
+            // Render minimalist character slots
+            renderSlots('slots-name', state.player.name, 15);
+            renderSlots('slots-age', state.player.age, 2);
+            renderSlots('slots-height', state.player.height, 3);
 
-      if (isCompleted && !cayendo) {
-        verifyResult();
-      }
-    }
+            // Update Summary Card
+            document.getElementById('preview-card-name').innerText = state.player.name || "---";
+            document.getElementById('preview-card-age').innerText = `Edad: ${state.player.age}`;
+            document.getElementById('preview-card-height').innerText = `${state.player.height} cm`;
 
-    function verifyResult() {
-      const targetStr = objetivo.join('');
-      const inputStr = ingresados.join('');
+            // Update Modals
+            const vkModal = document.getElementById('vk-modal');
+            const adjModal = document.getElementById('adjust-modal');
 
-      if (targetStr === inputStr) {
-        cambiarPaso("confirmado");
-      } else {
-        resultBoxEl.style.display = 'block';
-        setTimeout(() => {
-          initCaptchaRound();
-        }, 1600);
-      }
-    }
+            if (state.modal === 'KEYBOARD') {
+                vkModal.classList.add('open');
+                adjModal.classList.remove('open');
+                document.getElementById('vk-display').innerText = state.keyboard.tempName || "_";
+                
+                document.querySelectorAll('.key-btn').forEach(b => b.classList.remove('active-key'));
+                const activeKey = document.getElementById(`vk-key-${state.keyboard.row}-${state.keyboard.col}`);
+                if (activeKey) activeKey.classList.add('active-key');
 
-    function sleep(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
-    }
+            } else if (state.modal === 'ADJUST_AGE' || state.modal === 'ADJUST_HEIGHT') {
+                adjModal.classList.add('open');
+                vkModal.classList.remove('open');
+                const isAge = state.modal === 'ADJUST_AGE';
+                document.getElementById('adjust-title').innerText = isAge ? 'Ajustar Edad (16-44)' : 'Ajustar Altura (140-210)';
+                document.getElementById('adjust-value').innerText = `${state.adjuster.tempValue} ${isAge ? 'años' : 'cm'}`;
+            } else {
+                vkModal.classList.remove('open');
+                adjModal.classList.remove('open');
+            }
+        }
 
-    async function dropBall() {
-      if (cayendo || ingresados.length >= 3) return;
+        function handleInput(action) {
+            flashButton(action);
 
-      cayendo = true;
-      updateCaptchaUI();
+            if (state.modal === 'KEYBOARD') handleKeyboardInput(action);
+            else if (state.modal === 'ADJUST_AGE' || state.modal === 'ADJUST_HEIGHT') handleAdjusterInput(action);
+            else handleMainInput(action);
 
-      const boardWidth = boardEl.clientWidth || 372;
-      const centerX = boardWidth / 2;
+            updateUI();
+        }
 
-      ballEl.style.transition = 'none';
-      ballEl.style.left = `${centerX}px`;
-      ballEl.style.top = `10px`;
-      ballEl.style.display = 'block';
+        function handleMainInput(action) {
+            switch(action) {
+                case 'UP':
+                    if (state.activeRowIndex > 0) { state.activeRowIndex--; audio.move(); }
+                    break;
+                case 'DOWN':
+                    if (state.activeRowIndex < 4) { state.activeRowIndex++; audio.move(); }
+                    break;
+                case 'LEFT':
+                case 'RIGHT':
+                    if (state.activeRowIndex === 3) { state.activeRowIndex = 4; audio.move(); }
+                    else if (state.activeRowIndex === 4) { state.activeRowIndex = 3; audio.move(); }
+                    break;
+                case 'CROSS':
+                    audio.select();
+                    if (state.activeRowIndex === 0) {
+                        state.modal = 'KEYBOARD';
+                        state.keyboard.tempName = state.player.name;
+                        state.keyboard.row = 0;
+                        state.keyboard.col = 0;
+                    } else if (state.activeRowIndex === 1) {
+                        state.modal = 'ADJUST_AGE';
+                        state.adjuster.tempValue = state.player.age;
+                    } else if (state.activeRowIndex === 2) {
+                        state.modal = 'ADJUST_HEIGHT';
+                        state.adjuster.tempValue = state.player.height;
+                    } else if (state.activeRowIndex === 3) {
+                        validateAndCreatePlayer();
+                    } else if (state.activeRowIndex === 4) {
+                        showToast("Creación cancelada. Restableciendo...");
+                        state.player = { name: "JUGADOR 1", age: 22, height: 178 };
+                    }
+                    break;
+                case 'CIRCLE':
+                    audio.back();
+                    state.activeRowIndex = 4;
+                    break;
+                case 'TRIANGLE':
+                    audio.back();
+                    showToast("Volviendo al menú principal...");
+                    break;
+                case 'SQUARE':
+                    if (state.activeRowIndex === 0 && state.player.name.length > 0) {
+                        audio.delete();
+                        state.player.name = state.player.name.slice(0, -1);
+                    }
+                    break;
+            }
+        }
 
-      await sleep(20);
-      ballEl.style.transition = `top ${STEP_DURATION_MS}ms cubic-bezier(0.25, 1, 0.5, 1), left ${STEP_DURATION_MS}ms ease-in-out`;
+        function handleKeyboardInput(action) {
+            const maxRow = KEYBOARD_KEYS.length - 1;
 
-      let currentCol = 0;
-      const initialPeg = pegElements[0][0];
-      ballEl.style.left = `${initialPeg.x}px`;
-      ballEl.style.top = `${initialPeg.y}px`;
-      await sleep(STEP_DURATION_MS);
-      flashPeg(initialPeg.el);
+            switch(action) {
+                case 'UP': if (state.keyboard.row > 0) { state.keyboard.row--; audio.move(); } break;
+                case 'DOWN': if (state.keyboard.row < maxRow) { state.keyboard.row++; audio.move(); } break;
+                case 'LEFT': if (state.keyboard.col > 0) { state.keyboard.col--; audio.move(); } break;
+                case 'RIGHT':
+                    if (state.keyboard.col < KEYBOARD_KEYS[state.keyboard.row].length - 1) {
+                        state.keyboard.col++;
+                        audio.move();
+                    }
+                    break;
+                case 'CROSS':
+                    const key = KEYBOARD_KEYS[state.keyboard.row][state.keyboard.col];
+                    if (key === 'OK') confirmName();
+                    else if (key === 'BORRAR') { audio.delete(); state.keyboard.tempName = state.keyboard.tempName.slice(0, -1); }
+                    else if (key === 'ESPACIO' && state.keyboard.tempName.length < 15) { audio.select(); state.keyboard.tempName += " "; }
+                    else if (key !== 'ESPACIO') {
+                        if (state.keyboard.tempName.length < 15) { audio.select(); state.keyboard.tempName += key; }
+                        else audio.error();
+                    }
+                    break;
+                case 'SQUARE':
+                    audio.delete();
+                    state.keyboard.tempName = state.keyboard.tempName.slice(0, -1);
+                    break;
+                case 'CIRCLE':
+                case 'TRIANGLE':
+                    audio.back();
+                    state.modal = null;
+                    break;
+            }
 
-      for (let r = 1; r < 4; r++) {
-        const goRight = Math.random() < 0.5 ? 1 : 0;
-        currentCol += goRight;
+            const maxColCurrent = KEYBOARD_KEYS[state.keyboard.row].length - 1;
+            if (state.keyboard.col > maxColCurrent) state.keyboard.col = maxColCurrent;
+        }
 
-        const nextPeg = pegElements[r][currentCol];
-        ballEl.style.left = `${nextPeg.x}px`;
-        ballEl.style.top = `${nextPeg.y}px`;
+        function confirmName() {
+            const trimmed = state.keyboard.tempName.trim();
+            if (trimmed.length < 2) { audio.error(); showToast("¡Mínimo 2 caracteres!"); }
+            else if (trimmed.length > 15) { audio.error(); showToast("¡Máximo 15 caracteres!"); }
+            else { audio.select(); state.player.name = trimmed; state.modal = null; }
+        }
 
-        await sleep(STEP_DURATION_MS);
-        flashPeg(nextPeg.el);
-      }
+        function handleAdjusterInput(action) {
+            const isAge = state.modal === 'ADJUST_AGE';
+            const min = isAge ? 16 : 140;
+            const max = isAge ? 44 : 210;
 
-      const finalBounceRight = Math.random() < 0.5 ? 1 : 0;
-      const finalBinIndex = currentCol + finalBounceRight;
+            switch(action) {
+                case 'UP':
+                    if (state.adjuster.tempValue < max) { state.adjuster.tempValue++; audio.move(); }
+                    else audio.error();
+                    break;
+                case 'DOWN':
+                    if (state.adjuster.tempValue > min) { state.adjuster.tempValue--; audio.move(); }
+                    else audio.error();
+                    break;
+                case 'CROSS':
+                    audio.select();
+                    if (isAge) state.player.age = state.adjuster.tempValue;
+                    else state.player.height = state.adjuster.tempValue;
+                    state.modal = null;
+                    break;
+                case 'CIRCLE':
+                case 'TRIANGLE':
+                    audio.back();
+                    state.modal = null;
+                    break;
+            }
+        }
 
-      const binWidth = boardWidth / 5;
-      const binTargetX = (finalBinIndex * binWidth) + (binWidth / 2);
-      const binTargetY = 250;
+        function validateAndCreatePlayer() {
+            if (state.player.name.trim().length < 2) { audio.error(); showToast("Error: Nombre mín. 2 caracteres."); return; }
+            if (state.player.age < 16 || state.player.age > 44) { audio.error(); showToast("Error: Edad debe ser 16-44."); return; }
+            if (state.player.height < 140 || state.player.height > 210) { audio.error(); showToast("Error: Altura debe ser 140-210 cm."); return; }
 
-      ballEl.style.left = `${binTargetX}px`;
-      ballEl.style.top = `${binTargetY}px`;
+            audio.select();
+            showToast(`¡JUGADOR CREADO!\n${state.player.name} (${state.player.age} años, ${state.player.height} cm)`);
+        }
 
-      await sleep(STEP_DURATION_MS);
+        function flashButton(action) {
+            const map = { UP:'btn-up', DOWN:'btn-down', LEFT:'btn-left', RIGHT:'btn-right', CROSS:'btn-cross', CIRCLE:'btn-circle', TRIANGLE:'btn-triangle', SQUARE:'btn-square' };
+            const el = document.getElementById(map[action]);
+            if (el) {
+                el.classList.add('pressed');
+                setTimeout(() => el.classList.remove('pressed'), 100);
+            }
+        }
 
-      const chosenBinEl = document.getElementById(`bin-${finalBinIndex}`);
-      if (chosenBinEl) {
-        chosenBinEl.classList.add('highlight');
-        setTimeout(() => chosenBinEl.classList.remove('highlight'), 300);
-      }
+        function showToast(text) {
+            const toast = document.getElementById('toast');
+            toast.innerText = text;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
 
-      const letterObtained = letras[finalBinIndex];
-      ingresados.push(letterObtained);
+        /* Enforce virtual controller navigation by blocking physical key events */
+        window.addEventListener('keydown', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }, true);
 
-      await sleep(150);
-      ballEl.style.display = 'none';
-
-      cayendo = false;
-      updateCaptchaUI();
-    }
-
-    function flashPeg(pegDom) {
-      if (!pegDom) return;
-      pegDom.classList.add('hit');
-      setTimeout(() => pegDom.classList.remove('hit'), 180);
-    }
-
-    bookingFormEl.addEventListener('submit', (e) => {
-      e.preventDefault();
-      datosUsuario.nombre = document.getElementById('input-nombre').value;
-      datosUsuario.email = document.getElementById('input-email').value;
-      datosUsuario.fecha = document.getElementById('input-fecha').value;
-
-      cambiarPaso("captcha");
-    });
-
-    btnDropEl.addEventListener('click', dropBall);
-
-    btnDeleteEl.addEventListener('click', () => {
-      if (cayendo || ingresados.length === 0) return;
-      ingresados.pop();
-      resultBoxEl.style.display = 'none';
-      updateCaptchaUI();
-    });
-
-    btnNuevoTurnoEl.addEventListener('click', () => {
-      bookingFormEl.reset();
-      cambiarPaso("formulario");
-    });
-
-    window.addEventListener('load', () => {
-      buildBoard();
-    });
-
-    window.addEventListener('resize', () => {
-      const existingPegs = document.querySelectorAll('.peg');
-      existingPegs.forEach(p => p.remove());
-      pegElements.length = 0;
-      buildBoard();
-    });
-  </script>
+        window.onload = function() {
+            initKeyboardDOM();
+            updateUI();
+        };
+    </script>
 </body>
 </html>
